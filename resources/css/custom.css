@@ -1,0 +1,61 @@
+/* Custom Login Page Styles */
+
+/* Simple page layout */
+.fi-simple-layout {
+    background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%) !important;
+}
+
+/* Hide default header */
+.fi-simple-header {
+    display: none !important;
+}
+
+/* Simple main card */
+.fi-simple-main {
+    background: transparent !important;
+    box-shadow: none !important;
+    max-width: 450px !important;
+}
+
+/* Input styling for login */
+.fi-simple-main .fi-fo-text-input input {
+    border-radius: 25px !important;
+    text-align: center !important;
+    padding: 12px 20px !important;
+    border: 1px solid #d1d5db !important;
+}
+
+.fi-simple-main .fi-fo-text-input input::placeholder {
+    text-align: center !important;
+    color: #9ca3af !important;
+}
+
+.fi-simple-main .fi-fo-text-input input:focus {
+    border-color: #00A3E0 !important;
+    box-shadow: 0 0 0 2px rgba(0, 163, 224, 0.2) !important;
+}
+
+/* Button styling */
+.fi-simple-main .fi-btn {
+    border-radius: 25px !important;
+    background-color: #00A3E0 !important;
+    font-weight: 600 !important;
+}
+
+.fi-simple-main .fi-btn:hover {
+    background-color: #0089BD !important;
+}
+
+/* Remove input label space */
+.fi-simple-main .fi-fo-text-input-label {
+    display: none !important;
+}
+
+/* Form actions full width */
+.fi-simple-main .fi-ac {
+    width: 100% !important;
+}
+
+.fi-simple-main .fi-ac-action {
+    width: 100% !important;
+}

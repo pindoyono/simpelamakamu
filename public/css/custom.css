@@ -1,0 +1,93 @@
+/* Custom Login Page Styles */
+
+/* Simple page layout */
+.fi-simple-layout {
+    background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%) !important;
+    padding-top: 1rem !important;
+}
+
+/* Hide default header */
+.fi-simple-header {
+    display: none !important;
+}
+
+/* Simple main card */
+.fi-simple-main {
+    background: transparent !important;
+    box-shadow: none !important;
+    max-width: 450px !important;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+/* Input styling for login */
+.fi-simple-main .fi-fo-text-input input,
+.fi-simple-main input[type="email"],
+.fi-simple-main input[type="password"],
+.fi-simple-main input[type="text"] {
+    border-radius: 25px !important;
+    text-align: center !important;
+    padding: 12px 20px !important;
+    border: 1px solid #d1d5db !important;
+    background-color: #ffffff !important;
+    color: #1f2937 !important;
+}
+
+.fi-simple-main .fi-fo-text-input input::placeholder,
+.fi-simple-main input::placeholder {
+    text-align: center !important;
+    color: #6b7280 !important;
+}
+
+.fi-simple-main .fi-fo-text-input input:focus,
+.fi-simple-main input:focus {
+    border-color: #00A3E0 !important;
+    box-shadow: 0 0 0 2px rgba(0, 163, 224, 0.2) !important;
+    color: #1f2937 !important;
+}
+
+/* Fix text colors in simple layout */
+.fi-simple-main,
+.fi-simple-main * {
+    --tw-text-opacity: 1 !important;
+}
+
+.fi-simple-main h2,
+.fi-simple-main h3,
+.fi-simple-main p,
+.fi-simple-main span,
+.fi-simple-main label {
+    color: #1f2937 !important;
+}
+
+/* Keep SIMPEL SAPA KAMU title blue */
+.fi-simple-main h1[style*="color"] {
+    color: #00A3E0 !important;
+}
+
+/* Button styling */
+.fi-simple-main .fi-btn {
+    border-radius: 25px !important;
+    background-color: #00A3E0 !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+}
+
+.fi-simple-main .fi-btn:hover {
+    background-color: #0089BD !important;
+}
+
+/* Remove input label space */
+.fi-simple-main .fi-fo-text-input-label {
+    display: none !important;
+}
+
+/* Form actions full width */
+.fi-simple-main .fi-ac {
+    width: 100% !important;
+}
+
+.fi-simple-main .fi-ac-action {
+    width: 100% !important;
+}
+}

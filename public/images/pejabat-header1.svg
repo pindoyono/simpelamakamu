@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 180">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a365d"/>
+      <stop offset="100%" style="stop-color:#2c5282"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="500" height="180" fill="url(#bgGrad)"/>
+
+  <!-- Person 1 - Left (Wakil Bupati) -->
+  <g transform="translate(100, 20)">
+    <ellipse cx="0" cy="40" rx="28" ry="32" fill="#f5e6d3"/>
+    <rect x="-25" y="75" width="50" height="60" rx="3" fill="#ffffff"/>
+    <rect x="-20" y="80" width="40" height="8" fill="#1a365d"/>
+    <text x="0" y="150" text-anchor="middle" fill="#ffffff" font-size="7" font-family="Arial, sans-serif">Jakaria, S.E, M.Si</text>
+    <text x="0" y="162" text-anchor="middle" fill="#ffd700" font-size="6" font-family="Arial, sans-serif">Wakil Bupati Malinau</text>
+  </g>
+
+  <!-- Person 2 - Center (Bupati) -->
+  <g transform="translate(250, 10)">
+    <ellipse cx="0" cy="40" rx="32" ry="36" fill="#f5e6d3"/>
+    <rect x="-30" y="80" width="60" height="70" rx="3" fill="#ffffff"/>
+    <rect x="-25" y="85" width="50" height="10" fill="#1a365d"/>
+    <!-- Garuda -->
+    <circle cx="0" cy="5" r="10" fill="#ffd700"/>
+    <text x="0" y="165" text-anchor="middle" fill="#ffffff" font-size="8" font-family="Arial, sans-serif" font-weight="bold">Wempi W. Mawa, S.E, M.H</text>
+    <text x="0" y="177" text-anchor="middle" fill="#ffd700" font-size="7" font-family="Arial, sans-serif">Bupati Malinau</text>
+  </g>
+
+  <!-- Person 3 - Right (Sekda) -->
+  <g transform="translate(400, 20)">
+    <ellipse cx="0" cy="40" rx="28" ry="32" fill="#f5e6d3"/>
+    <rect x="-25" y="75" width="50" height="60" rx="3" fill="#4a5568"/>
+    <rect x="-20" y="80" width="40" height="8" fill="#2d3748"/>
+    <text x="0" y="150" text-anchor="middle" fill="#ffffff" font-size="6" font-family="Arial, sans-serif">Dr. Ernes Silvanus, S.Pi, M.M, M.H</text>
+    <text x="0" y="162" text-anchor="middle" fill="#ffd700" font-size="6" font-family="Arial, sans-serif">Sekretaris Daerah Kab. Malinau</text>
+  </g>
+</svg>
