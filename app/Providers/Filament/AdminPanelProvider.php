@@ -31,8 +31,9 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login(Login::class)
-            ->brandName('SIMPEL SAPA KAMU')
+            ->brandName('SIMPEL LAMA KAMU')
             ->favicon(asset('favicon.png'))
+            ->spa()
             ->colors([
                 'primary' => Color::hex('#00A3E0'),
             ])

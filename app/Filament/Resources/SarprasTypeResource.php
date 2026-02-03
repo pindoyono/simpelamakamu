@@ -9,11 +9,11 @@ use BackedEnum;
 use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Select;
+use Filament\Schemas\Components\TextInput;
+use Filament\Schemas\Components\Textarea;
+use Filament\Schemas\Components\Toggle;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
@@ -36,9 +36,9 @@ class SarprasTypeResource extends Resource
 
     protected static ?string $navigationLabel = 'Tipe SARPRAS';
 
-    protected static ?string $modelLabel = 'Tipe SARPRAS';
+    protected static ?string $modelLabel = '';
 
-    protected static ?string $pluralModelLabel = 'Tipe SARPRAS';
+    protected static ?string $pluralModelLabel = '';
 
     public static function form(Schema $schema): Schema
     {
