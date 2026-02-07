@@ -9,10 +9,23 @@ use App\Models\SarprasCategory;
 use App\Models\AcademicPeriod;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Support\Facades\Auth;
 
 class SisarprasStatsWidget extends BaseWidget
 {
     protected static ?int $sort = 1;
+
+    public static function canView(): bool
+    {
+        $user = Auth::user();
+
+        // Hide for users with only 'sekolah' role
+        if ($user && $user->hasRole('sekolah') && !$user->hasRole('super_admin') && !$user->hasRole('admin')) {
+            return false;
+        }
+
+        return true;
+    }
 
     protected function getStats(): array
     {

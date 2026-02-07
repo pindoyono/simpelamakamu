@@ -32,18 +32,29 @@ class ProcurementProposalResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Manajemen SARPRAS';
+    protected static ?int $navigationSort = 3;
 
-    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationLabel = 'Pengadaan/Rehabilitasi';
 
-    protected static ?string $navigationLabel = 'Usulan Pengadaan';
+    protected static ?string $modelLabel = 'Pengadaan/Rehabilitasi';
 
-    protected static ?string $modelLabel = 'Usulan Pengadaan';
+    protected static ?string $pluralModelLabel = 'Pengadaan/Rehabilitasi';
 
-    protected static ?string $pluralModelLabel = 'Usulan Pengadaan';
+    public static function getNavigationGroup(): ?string
+    {
+        $user = Auth::user();
+        if ($user && $user->hasRole('sekolah') && !$user->hasRole('super_admin') && !$user->hasRole('admin')) {
+            return null;
+        }
+        return 'Manajemen SARPRAS';
+    }
 
     public static function form(Schema $schema): Schema
     {
+        $user = Auth::user();
+        $isSekolahRole = $user && $user->hasRole('sekolah') && !$user->hasRole('super_admin') && !$user->hasRole('admin');
+        $userSekolahId = $isSekolahRole ? $user->sekolahs()->first()?->id : null;
+
         return $schema
             ->components([
                 Tabs::make('Procurement Proposal')
@@ -59,11 +70,23 @@ class ProcurementProposalResource extends Resource
                                             ->required()
                                             ->searchable()
                                             ->preload()
-                                            ->native(false),
+                                            ->native(false)
+                                            ->hidden($isSekolahRole)
+                                            ->default($userSekolahId),
+
+                                        \Filament\Forms\Components\Hidden::make('sekolah_id')
+                                            ->default($userSekolahId)
+                                            ->visible($isSekolahRole),
 
                                         Select::make('academic_period_id')
                                             ->label('Tahun Ajaran')
-                                            ->relationship('academicPeriod', 'year')
+                                            ->options(function () {
+                                                return AcademicPeriod::orderBy('year', 'desc')
+                                                    ->get()
+                                                    ->mapWithKeys(fn ($period) => [
+                                                        $period->id => $period->year . ($period->is_active ? ' ✓ (Aktif)' : '')
+                                                    ]);
+                                            })
                                             ->required()
                                             ->searchable()
                                             ->preload()
@@ -83,20 +106,9 @@ class ProcurementProposalResource extends Resource
                                                 'low' => 'Rendah',
                                                 'medium' => 'Sedang',
                                                 'high' => 'Tinggi',
-                                                'urgent' => 'Mendesak',
+                                                'critical' => 'Mendesak',
                                             ])
                                             ->default('medium')
-                                            ->native(false),
-
-                                        Select::make('category')
-                                            ->label('Kategori')
-                                            ->required()
-                                            ->options([
-                                                'new_procurement' => 'Pengadaan Baru',
-                                                'repair' => 'Perbaikan',
-                                                'replacement' => 'Penggantian',
-                                                'upgrade' => 'Peningkatan',
-                                            ])
                                             ->native(false),
                                     ]),
                             ]),
@@ -108,31 +120,11 @@ class ProcurementProposalResource extends Resource
                                     ->required()
                                     ->rows(4),
 
-                                Grid::make(3)
-                                    ->schema([
-                                        TextInput::make('quantity')
-                                            ->label('Jumlah')
-                                            ->numeric()
-                                            ->required()
-                                            ->default(1)
-                                            ->minValue(1),
-
-                                        TextInput::make('unit')
-                                            ->label('Satuan')
-                                            ->required()
-                                            ->default('unit'),
-
-                                        TextInput::make('estimated_budget')
-                                            ->label('Estimasi Anggaran')
-                                            ->numeric()
-                                            ->prefix('Rp')
-                                            ->required(),
-                                    ]),
-
-                                Textarea::make('justification')
-                                    ->label('Justifikasi')
-                                    ->helperText('Alasan dan dasar usulan pengadaan')
-                                    ->rows(3),
+                                TextInput::make('total_budget')
+                                    ->label('Total Anggaran')
+                                    ->numeric()
+                                    ->prefix('Rp')
+                                    ->required(),
                             ]),
                         Tabs\Tab::make('Status')
                             ->icon('heroicon-o-flag')
@@ -181,24 +173,6 @@ class ProcurementProposalResource extends Resource
                     ->searchable()
                     ->limit(30),
 
-                TextColumn::make('category')
-                    ->label('Kategori')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'new_procurement' => 'success',
-                        'repair' => 'warning',
-                        'replacement' => 'info',
-                        'upgrade' => 'primary',
-                        default => 'gray',
-                    })
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'new_procurement' => 'Pengadaan Baru',
-                        'repair' => 'Perbaikan',
-                        'replacement' => 'Penggantian',
-                        'upgrade' => 'Peningkatan',
-                        default => $state,
-                    }),
-
                 TextColumn::make('priority')
                     ->label('Prioritas')
                     ->badge()
@@ -206,18 +180,18 @@ class ProcurementProposalResource extends Resource
                         'low' => 'gray',
                         'medium' => 'info',
                         'high' => 'warning',
-                        'urgent' => 'danger',
+                        'critical' => 'danger',
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'low' => 'Rendah',
                         'medium' => 'Sedang',
                         'high' => 'Tinggi',
-                        'urgent' => 'Mendesak',
+                        'critical' => 'Mendesak',
                         default => $state,
                     }),
 
-                TextColumn::make('estimated_budget')
+                TextColumn::make('total_budget')
                     ->label('Anggaran')
                     ->money('IDR')
                     ->sortable(),
@@ -270,14 +244,7 @@ class ProcurementProposalResource extends Resource
                         'low' => 'Rendah',
                         'medium' => 'Sedang',
                         'high' => 'Tinggi',
-                        'urgent' => 'Mendesak',
-                    ]),
-                SelectFilter::make('category')
-                    ->options([
-                        'new_procurement' => 'Pengadaan Baru',
-                        'repair' => 'Perbaikan',
-                        'replacement' => 'Penggantian',
-                        'upgrade' => 'Peningkatan',
+                        'critical' => 'Mendesak',
                     ]),
             ])
             ->actions([
@@ -286,31 +253,77 @@ class ProcurementProposalResource extends Resource
                     ->icon('heroicon-o-paper-airplane')
                     ->color('info')
                     ->requiresConfirmation()
-                    ->action(fn (ProcurementProposal $record) => $record->update(['status' => 'submitted']))
+                    ->action(fn (ProcurementProposal $record) => $record->update([
+                        'status' => 'submitted',
+                        'submitted_by' => Auth::id(),
+                        'submitted_at' => now(),
+                    ]))
                     ->visible(fn (ProcurementProposal $record): bool => $record->status === 'draft'),
                 Action::make('review')
                     ->label('Tinjau')
                     ->icon('heroicon-o-eye')
                     ->color('warning')
                     ->requiresConfirmation()
-                    ->action(fn (ProcurementProposal $record) => $record->update(['status' => 'under_review']))
-                    ->visible(fn (ProcurementProposal $record): bool => $record->status === 'submitted'),
+                    ->action(fn (ProcurementProposal $record) => $record->update([
+                        'status' => 'under_review',
+                        'reviewed_by' => Auth::id(),
+                        'reviewed_at' => now(),
+                    ]))
+                    ->visible(function (ProcurementProposal $record): bool {
+                        $user = Auth::user();
+                        $isSekolahRole = $user && $user->hasRole('sekolah') && !$user->hasRole('super_admin') && !$user->hasRole('admin');
+                        return !$isSekolahRole && $record->status === 'submitted';
+                    }),
                 Action::make('approve')
                     ->label('Setujui')
                     ->icon('heroicon-o-check')
                     ->color('success')
                     ->requiresConfirmation()
-                    ->action(fn (ProcurementProposal $record) => $record->update(['status' => 'approved']))
-                    ->visible(fn (ProcurementProposal $record): bool => $record->status === 'under_review'),
+                    ->action(fn (ProcurementProposal $record) => $record->update([
+                        'status' => 'approved',
+                        'approved_by' => Auth::id(),
+                        'approved_at' => now(),
+                    ]))
+                    ->visible(function (ProcurementProposal $record): bool {
+                        $user = Auth::user();
+                        $isSekolahRole = $user && $user->hasRole('sekolah') && !$user->hasRole('super_admin') && !$user->hasRole('admin');
+                        return !$isSekolahRole && $record->status === 'under_review';
+                    }),
                 Action::make('reject')
                     ->label('Tolak')
                     ->icon('heroicon-o-x-mark')
                     ->color('danger')
                     ->requiresConfirmation()
-                    ->action(fn (ProcurementProposal $record) => $record->update(['status' => 'rejected']))
-                    ->visible(fn (ProcurementProposal $record): bool => in_array($record->status, ['submitted', 'under_review'])),
-                \Filament\Actions\EditAction::make(),
-                \Filament\Actions\DeleteAction::make(),
+                    ->action(fn (ProcurementProposal $record) => $record->update([
+                        'status' => 'rejected',
+                        'rejected_by' => Auth::id(),
+                        'rejected_at' => now(),
+                    ]))
+                    ->visible(function (ProcurementProposal $record): bool {
+                        $user = Auth::user();
+                        $isSekolahRole = $user && $user->hasRole('sekolah') && !$user->hasRole('super_admin') && !$user->hasRole('admin');
+                        return !$isSekolahRole && in_array($record->status, ['submitted', 'under_review']);
+                    }),
+                \Filament\Actions\EditAction::make()
+                    ->visible(function (ProcurementProposal $record): bool {
+                        $user = Auth::user();
+                        $isSekolahRole = $user && $user->hasRole('sekolah') && !$user->hasRole('super_admin') && !$user->hasRole('admin');
+                        // Sekolah hanya bisa edit jika draft atau rejected
+                        if ($isSekolahRole) {
+                            return in_array($record->status, ['draft', 'rejected']);
+                        }
+                        return true;
+                    }),
+                \Filament\Actions\DeleteAction::make()
+                    ->visible(function (ProcurementProposal $record): bool {
+                        $user = Auth::user();
+                        $isSekolahRole = $user && $user->hasRole('sekolah') && !$user->hasRole('super_admin') && !$user->hasRole('admin');
+                        // Sekolah hanya bisa hapus jika draft atau rejected
+                        if ($isSekolahRole) {
+                            return in_array($record->status, ['draft', 'rejected']);
+                        }
+                        return true;
+                    }),
             ])
             ->bulkActions([
                 \Filament\Actions\BulkActionGroup::make([

@@ -36,8 +36,6 @@ class ArchiveResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-archive-box';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Manajemen SARPRAS';
-
     protected static ?int $navigationSort = 3;
 
     protected static ?string $navigationLabel = 'Arsip Dokumen';
@@ -45,6 +43,15 @@ class ArchiveResource extends Resource
     protected static ?string $modelLabel = 'Arsip Dokumen';
 
     protected static ?string $pluralModelLabel = 'Arsip Dokumen';
+
+    public static function getNavigationGroup(): ?string
+    {
+        $user = \Illuminate\Support\Facades\Auth::user();
+        if ($user && $user->hasRole('sekolah') && !$user->hasRole('super_admin') && !$user->hasRole('admin')) {
+            return null;
+        }
+        return 'Manajemen SARPRAS';
+    }
 
     public static function form(Schema $schema): Schema
     {

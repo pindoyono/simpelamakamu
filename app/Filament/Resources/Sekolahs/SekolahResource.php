@@ -14,6 +14,8 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class SekolahResource extends Resource
 {
@@ -27,11 +29,32 @@ class SekolahResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Data Sekolah';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Master Data';
-
     protected static ?int $navigationSort = 1;
 
+    public static function getNavigationGroup(): ?string
+    {
+        $user = Auth::user();
+        if ($user && $user->hasRole('sekolah') && !$user->hasRole('super_admin') && !$user->hasRole('admin')) {
+            return null;
+        }
+        return 'Master Data';
+    }
+
     protected static ?string $recordTitleAttribute = 'nama';
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = Auth::user();
+
+        // Filter untuk role sekolah - hanya tampilkan sekolah miliknya
+        if ($user && $user->hasRole('sekolah') && !$user->hasRole('super_admin') && !$user->hasRole('admin')) {
+            $sekolahIds = $user->sekolahs()->pluck('sekolahs.id')->toArray();
+            $query->whereIn('id', $sekolahIds);
+        }
+
+        return $query;
+    }
 
     public static function form(Schema $schema): Schema
     {

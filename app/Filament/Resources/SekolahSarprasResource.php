@@ -37,18 +37,29 @@ class SekolahSarprasResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-library';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Manajemen SARPRAS';
+    protected static ?int $navigationSort = 2;
 
-    protected static ?int $navigationSort = 1;
+    protected static ?string $navigationLabel = 'Sarana Prasarana';
 
-    protected static ?string $navigationLabel = 'Data SARPRAS Sekolah';
+    protected static ?string $modelLabel = 'Sarana Prasarana';
 
-    protected static ?string $modelLabel = 'Data SARPRAS';
+    protected static ?string $pluralModelLabel = 'Sarana Prasarana';
 
-    protected static ?string $pluralModelLabel = 'Data SARPRAS Sekolah';
+    public static function getNavigationGroup(): ?string
+    {
+        $user = \Illuminate\Support\Facades\Auth::user();
+        if ($user && $user->hasRole('sekolah') && !$user->hasRole('super_admin') && !$user->hasRole('admin')) {
+            return null;
+        }
+        return 'Manajemen SARPRAS';
+    }
 
     public static function form(Schema $schema): Schema
     {
+        $user = \Illuminate\Support\Facades\Auth::user();
+        $isSekolahRole = $user && $user->hasRole('sekolah') && !$user->hasRole('super_admin') && !$user->hasRole('admin');
+        $userSekolahId = $isSekolahRole ? $user->sekolahs()->first()?->id : null;
+
         return $schema
             ->components([
                 Tabs::make('Sekolah Sarpras')
@@ -64,11 +75,23 @@ class SekolahSarprasResource extends Resource
                                             ->required()
                                             ->searchable()
                                             ->preload()
-                                            ->native(false),
+                                            ->native(false)
+                                            ->hidden($isSekolahRole)
+                                            ->default($userSekolahId),
+
+                                        \Filament\Forms\Components\Hidden::make('sekolah_id')
+                                            ->default($userSekolahId)
+                                            ->visible($isSekolahRole),
 
                                         Select::make('academic_period_id')
                                             ->label('Tahun Ajaran')
-                                            ->relationship('academicPeriod', 'year')
+                                            ->options(function () {
+                                                return AcademicPeriod::orderBy('year', 'desc')
+                                                    ->get()
+                                                    ->mapWithKeys(fn ($period) => [
+                                                        $period->id => $period->year . ($period->is_active ? ' ✓ (Aktif)' : '')
+                                                    ]);
+                                            })
                                             ->required()
                                             ->searchable()
                                             ->preload()
@@ -83,7 +106,7 @@ class SekolahSarprasResource extends Resource
                                             ->preload()
                                             ->native(false),
 
-                                        TextInput::make('quantity')
+                                        TextInput::make('jumlah')
                                             ->label('Jumlah')
                                             ->numeric()
                                             ->required()
@@ -96,28 +119,28 @@ class SekolahSarprasResource extends Resource
                             ->schema([
                                 Grid::make(4)
                                     ->schema([
-                                        TextInput::make('condition_good')
+                                        TextInput::make('kondisi_baik')
                                             ->label('Baik')
                                             ->numeric()
                                             ->default(0)
                                             ->minValue(0)
                                             ->suffix('unit'),
 
-                                        TextInput::make('condition_light_damage')
+                                        TextInput::make('kondisi_rusak_ringan')
                                             ->label('Rusak Ringan')
                                             ->numeric()
                                             ->default(0)
                                             ->minValue(0)
                                             ->suffix('unit'),
 
-                                        TextInput::make('condition_medium_damage')
+                                        TextInput::make('kondisi_rusak_sedang')
                                             ->label('Rusak Sedang')
                                             ->numeric()
                                             ->default(0)
                                             ->minValue(0)
                                             ->suffix('unit'),
 
-                                        TextInput::make('condition_heavy_damage')
+                                        TextInput::make('kondisi_rusak_berat')
                                             ->label('Rusak Berat')
                                             ->numeric()
                                             ->default(0)
@@ -141,7 +164,7 @@ class SekolahSarprasResource extends Resource
                                             ->helperText('Tandai jika memerlukan tindakan segera'),
                                     ]),
 
-                                Textarea::make('notes')
+                                Textarea::make('keterangan')
                                     ->label('Catatan')
                                     ->rows(4)
                                     ->columnSpanFull(),
@@ -172,32 +195,32 @@ class SekolahSarprasResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('quantity')
+                TextColumn::make('jumlah')
                     ->label('Jumlah')
                     ->sortable()
                     ->alignCenter(),
 
-                TextColumn::make('condition_good')
+                TextColumn::make('kondisi_baik')
                     ->label('Baik')
                     ->badge()
                     ->color('success')
                     ->alignCenter(),
 
-                TextColumn::make('condition_light_damage')
+                TextColumn::make('kondisi_rusak_ringan')
                     ->label('RR')
                     ->badge()
                     ->color('warning')
                     ->alignCenter()
                     ->toggleable(),
 
-                TextColumn::make('condition_medium_damage')
+                TextColumn::make('kondisi_rusak_sedang')
                     ->label('RS')
                     ->badge()
                     ->color('warning')
                     ->alignCenter()
                     ->toggleable(),
 
-                TextColumn::make('condition_heavy_damage')
+                TextColumn::make('kondisi_rusak_berat')
                     ->label('RB')
                     ->badge()
                     ->color('danger')
@@ -247,13 +270,22 @@ class SekolahSarprasResource extends Resource
                     ->color('success')
                     ->requiresConfirmation()
                     ->action(fn (SekolahSarpras $record) => $record->update(['is_verified' => true]))
-                    ->visible(fn (SekolahSarpras $record): bool => !$record->is_verified),
+                    ->visible(function (SekolahSarpras $record): bool {
+                        $user = \Illuminate\Support\Facades\Auth::user();
+                        $isSekolahRole = $user && $user->hasRole('sekolah') && !$user->hasRole('super_admin') && !$user->hasRole('admin');
+                        return !$isSekolahRole && !$record->is_verified;
+                    }),
                 Action::make('flag_attention')
                     ->label('Tandai Perhatian')
                     ->icon('heroicon-o-flag')
                     ->color('warning')
                     ->requiresConfirmation()
-                    ->action(fn (SekolahSarpras $record) => $record->update(['needs_attention' => !$record->needs_attention])),
+                    ->action(fn (SekolahSarpras $record) => $record->update(['needs_attention' => !$record->needs_attention]))
+                    ->visible(function (): bool {
+                        $user = \Illuminate\Support\Facades\Auth::user();
+                        $isSekolahRole = $user && $user->hasRole('sekolah') && !$user->hasRole('super_admin') && !$user->hasRole('admin');
+                        return !$isSekolahRole;
+                    }),
                 EditAction::make(),
                 DeleteAction::make(),
             ])

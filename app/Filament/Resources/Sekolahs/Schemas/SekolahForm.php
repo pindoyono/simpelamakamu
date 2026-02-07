@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Sekolahs\Schemas;
 
+use Dotswan\MapPicker\Fields\Map;
 use Filament\Forms\Components\FileUpload;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\Select;
@@ -15,34 +16,35 @@ class SekolahForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(2)
             ->components([
-                Section::make('Identitas Sekolah')
-                    ->description('Informasi dasar identitas sekolah')
-                    ->columns(2)
+                // KOLOM KIRI
+                Section::make('Identitas & Kontak')
+                    ->columnSpan(1)
                     ->schema([
                         TextInput::make('npsn')
                             ->label('NPSN')
-                            ->placeholder('Contoh: 12345678')
+                            ->placeholder('12345678')
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->maxLength(8),
                         TextInput::make('nama')
                             ->label('Nama Sekolah')
-                            ->placeholder('Contoh: SDN 1 Jakarta')
+                            ->placeholder('SDN 1 Jakarta')
                             ->required()
                             ->maxLength(255),
                         Select::make('jenjang')
-                            ->label('Jenjang Pendidikan')
+                            ->label('Jenjang')
                             ->options([
-                                'SD' => 'SD (Sekolah Dasar)',
-                                'SMP' => 'SMP (Sekolah Menengah Pertama)',
-                                'SMA' => 'SMA (Sekolah Menengah Atas)',
-                                'SMK' => 'SMK (Sekolah Menengah Kejuruan)',
+                                'SD' => 'SD',
+                                'SMP' => 'SMP',
+                                'SMA' => 'SMA',
+                                'SMK' => 'SMK',
                             ])
                             ->required()
                             ->default('SD'),
                         Select::make('status')
-                            ->label('Status Sekolah')
+                            ->label('Status')
                             ->options([
                                 'Negeri' => 'Negeri',
                                 'Swasta' => 'Swasta',
@@ -54,50 +56,17 @@ class SekolahForm
                             ->numeric()
                             ->minValue(1900)
                             ->maxValue(date('Y'))
-                            ->placeholder('Contoh: 1980'),
+                            ->placeholder('1980'),
                         Select::make('akreditasi')
                             ->label('Akreditasi')
                             ->options([
                                 'A' => 'A (Unggul)',
                                 'B' => 'B (Baik)',
                                 'C' => 'C (Cukup)',
-                                'Belum' => 'Belum Terakreditasi',
+                                'Belum' => 'Belum',
                             ]),
-                    ]),
-
-                Section::make('Alamat Sekolah')
-                    ->description('Informasi lokasi dan alamat sekolah')
-                    ->columns(2)
-                    ->schema([
-                        Textarea::make('alamat')
-                            ->label('Alamat Lengkap')
-                            ->placeholder('Jl. Pendidikan No. 1')
-                            ->rows(3)
-                            ->columnSpanFull(),
-                        TextInput::make('kelurahan')
-                            ->label('Kelurahan/Desa')
-                            ->maxLength(100),
-                        TextInput::make('kecamatan')
-                            ->label('Kecamatan')
-                            ->maxLength(100),
-                        TextInput::make('kabupaten')
-                            ->label('Kabupaten/Kota')
-                            ->maxLength(100),
-                        TextInput::make('provinsi')
-                            ->label('Provinsi')
-                            ->maxLength(100),
-                        TextInput::make('kode_pos')
-                            ->label('Kode Pos')
-                            ->maxLength(10)
-                            ->placeholder('12345'),
-                    ]),
-
-                Section::make('Kontak')
-                    ->description('Informasi kontak sekolah')
-                    ->columns(2)
-                    ->schema([
                         TextInput::make('telepon')
-                            ->label('Nomor Telepon')
+                            ->label('Telepon')
                             ->tel()
                             ->maxLength(20)
                             ->placeholder('021-1234567'),
@@ -110,35 +79,82 @@ class SekolahForm
                             ->label('Website')
                             ->url()
                             ->maxLength(255)
-                            ->placeholder('https://sekolah.sch.id')
-                            ->columnSpanFull(),
-                    ]),
-
-                Section::make('Kepala Sekolah')
-                    ->description('Informasi kepala sekolah')
-                    ->columns(2)
-                    ->schema([
+                            ->placeholder('https://sekolah.sch.id'),
                         TextInput::make('kepala_sekolah')
                             ->label('Nama Kepala Sekolah')
                             ->maxLength(255),
                         TextInput::make('nip_kepala_sekolah')
                             ->label('NIP Kepala Sekolah')
                             ->maxLength(30),
-                    ]),
-
-                Section::make('Lainnya')
-                    ->columns(2)
-                    ->schema([
                         FileUpload::make('logo')
                             ->label('Logo Sekolah')
                             ->image()
                             ->directory('logos')
-                            ->maxSize(1024)
-                            ->columnSpanFull(),
+                            ->maxSize(1024),
                         Toggle::make('is_active')
                             ->label('Status Aktif')
-                            ->helperText('Sekolah yang tidak aktif tidak akan muncul di daftar')
                             ->default(true),
+                    ]),
+
+                // KOLOM KANAN
+                Section::make('Alamat & Lokasi')
+                    ->columnSpan(1)
+                    ->schema([
+                        Textarea::make('alamat')
+                            ->label('Alamat Lengkap')
+                            ->placeholder('Jl. Pendidikan No. 1')
+                            ->rows(2),
+                        TextInput::make('kelurahan')
+                            ->label('Kelurahan')
+                            ->maxLength(100),
+                        TextInput::make('kecamatan')
+                            ->label('Kecamatan')
+                            ->maxLength(100),
+                        TextInput::make('kabupaten')
+                            ->label('Kab/Kota')
+                            ->maxLength(100),
+                        TextInput::make('provinsi')
+                            ->label('Provinsi')
+                            ->maxLength(100),
+                        TextInput::make('kode_pos')
+                            ->label('Kode Pos')
+                            ->maxLength(10)
+                            ->placeholder('12345'),
+                        Map::make('location')
+                            ->label('Peta Lokasi')
+                            ->defaultLocation(latitude: 3.5700, longitude: 116.6300)
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                $set('latitude', $state['lat']);
+                                $set('longitude', $state['lng']);
+                            })
+                            ->afterStateHydrated(function ($state, $record, callable $set) {
+                                if ($record && $record->latitude && $record->longitude) {
+                                    $set('location', [
+                                        'lat' => (float) $record->latitude,
+                                        'lng' => (float) $record->longitude,
+                                    ]);
+                                }
+                            })
+                            ->showMarker()
+                            ->markerColor('#3b82f6')
+                            ->showFullscreenControl()
+                            ->showZoomControl()
+                            ->draggable()
+                            ->tilesUrl('https://tile.openstreetmap.de/{z}/{x}/{y}.png')
+                            ->zoom(15)
+                            ->detectRetina()
+                            ->extraStyles([
+                                'min-height: 300px',
+                                'border-radius: 8px',
+                            ]),
+                        TextInput::make('latitude')
+                            ->label('Latitude')
+                            ->numeric()
+                            ->placeholder('3.5700'),
+                        TextInput::make('longitude')
+                            ->label('Longitude')
+                            ->numeric()
+                            ->placeholder('116.6300'),
                     ]),
             ]);
     }
