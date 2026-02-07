@@ -10,6 +10,17 @@ class Archive extends Model
 {
     use HasFactory;
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->archive_code)) {
+                $model->archive_code = static::generateArchiveCode();
+            }
+        });
+    }
+
     protected $fillable = [
         'archive_code',
         'sekolah_id',

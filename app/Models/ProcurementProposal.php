@@ -10,6 +10,17 @@ class ProcurementProposal extends Model
 {
     use HasFactory;
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->proposal_code)) {
+                $model->proposal_code = static::generateProposalCode();
+            }
+        });
+    }
+
     protected $fillable = [
         'proposal_code',
         'sekolah_id',

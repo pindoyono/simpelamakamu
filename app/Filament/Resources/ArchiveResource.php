@@ -12,12 +12,12 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Select;
-use Filament\Schemas\Components\TextInput;
-use Filament\Schemas\Components\Textarea;
-use Filament\Schemas\Components\FileUpload;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\FileUpload;
 use Filament\Schemas\Components\Tabs;
-use Filament\Schemas\Components\DatePicker;
+use Filament\Forms\Components\DatePicker;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
@@ -85,11 +85,14 @@ class ArchiveResource extends Resource
                                             ->required()
                                             ->options([
                                                 'sarpras_report' => 'Laporan SARPRAS',
-                                                'inventory' => 'Inventarisasi',
-                                                'procurement' => 'Pengadaan',
-                                                'maintenance' => 'Pemeliharaan',
-                                                'photo' => 'Dokumentasi Foto',
-                                                'official_letter' => 'Surat Resmi',
+                                                'procurement_proposal' => 'Usulan Pengadaan',
+                                                'maintenance_record' => 'Catatan Pemeliharaan',
+                                                'inspection_report' => 'Laporan Inspeksi',
+                                                'inventory_list' => 'Daftar Inventaris',
+                                                'budget_document' => 'Dokumen Anggaran',
+                                                'contract' => 'Kontrak',
+                                                'photo_documentation' => 'Dokumentasi Foto',
+                                                'certificate' => 'Sertifikat',
                                                 'other' => 'Lainnya',
                                             ])
                                             ->native(false),
