@@ -29,7 +29,7 @@ class SarprasCategoryResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Master Data';
+    protected static string|UnitEnum|null $navigationGroup = 'Pengaturan';
 
     protected static ?int $navigationSort = 2;
 

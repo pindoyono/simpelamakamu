@@ -23,7 +23,7 @@ class SekolahResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingOffice2;
 
-    protected static ?string $navigationLabel = 'Data Sekolah';
+    protected static ?string $navigationLabel = 'Sekolah';
 
     protected static ?string $modelLabel = 'Sekolah';
 
@@ -33,11 +33,7 @@ class SekolahResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        $user = Auth::user();
-        if ($user && $user->hasRole('sekolah') && !$user->hasRole('super_admin') && !$user->hasRole('admin')) {
-            return null;
-        }
-        return 'Master Data';
+        return null;
     }
 
     protected static ?string $recordTitleAttribute = 'nama';

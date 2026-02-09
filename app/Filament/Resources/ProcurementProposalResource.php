@@ -42,11 +42,7 @@ class ProcurementProposalResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        $user = Auth::user();
-        if ($user && $user->hasRole('sekolah') && !$user->hasRole('super_admin') && !$user->hasRole('admin')) {
-            return null;
-        }
-        return 'Manajemen SARPRAS';
+        return null;
     }
 
     public static function form(Schema $schema): Schema
