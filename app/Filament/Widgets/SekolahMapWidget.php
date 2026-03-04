@@ -9,6 +9,7 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Schemas\Schema;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class SekolahMapWidget extends Widget implements HasForms
 {
@@ -34,7 +35,7 @@ class SekolahMapWidget extends Widget implements HasForms
 
         // If user has sekolah role, show their sekolah location
         if ($user && $user->hasRole('sekolah') && $user->sekolahs()->exists()) {
-            $this->primarySekolah = $user->sekolahs()->first();
+            $this->primarySekolah = $user->sekolahs()->with('currentAcademicPeriod')->first();
             if ($this->primarySekolah && $this->primarySekolah->latitude && $this->primarySekolah->longitude) {
                 $lat = (float) $this->primarySekolah->latitude;
                 $lng = (float) $this->primarySekolah->longitude;

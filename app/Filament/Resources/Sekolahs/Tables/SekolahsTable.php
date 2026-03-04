@@ -63,6 +63,21 @@ class SekolahsTable
                         default => 'gray',
                     })
                     ->sortable(),
+                TextColumn::make('jumlah_siswa')
+                    ->label('Jumlah Siswa')
+                    ->sortable()
+                    ->toggleable(),
+                TextColumn::make('status_tanah')
+                    ->label('Status Tanah')
+                    ->badge()
+                    ->color(fn (?string $state): string => match ($state) {
+                        'Milik Sendiri' => 'success',
+                        'Sewa' => 'warning',
+                        'Pinjam' => 'info',
+                        'Hibah' => 'danger',
+                        default => 'gray',
+                    })
+                    ->toggleable(),
                 TextColumn::make('kecamatan')
                     ->label('Kecamatan')
                     ->searchable()

@@ -86,11 +86,46 @@ class SekolahForm
                         TextInput::make('nip_kepala_sekolah')
                             ->label('NIP Kepala Sekolah')
                             ->maxLength(30),
+                        TextInput::make('jumlah_siswa')
+                            ->label('Jumlah Siswa')
+                            ->numeric()
+                            ->minValue(0)
+                            ->default(0)
+                            ->placeholder('0'),
+                        TextInput::make('jumlah_guru')
+                            ->label('Jumlah Guru')
+                            ->numeric()
+                            ->minValue(0)
+                            ->default(0)
+                            ->placeholder('0'),
+                        TextInput::make('jumlah_tu')
+                            ->label('Jumlah TU')
+                            ->numeric()
+                            ->minValue(0)
+                            ->default(0)
+                            ->placeholder('0'),
                         FileUpload::make('logo')
                             ->label('Logo Sekolah')
                             ->image()
+                            ->disk('public')
                             ->directory('logos')
                             ->maxSize(1024),
+                        Select::make('status_tanah')
+                            ->label('Status Tanah')
+                            ->options([
+                                'Milik Sendiri' => 'Milik Sendiri',
+                                'Sewa' => 'Sewa',
+                                'Pinjam' => 'Pinjam',
+                                'Hibah' => 'Hibah',
+                            ]),
+                        FileUpload::make('sertifikat_tanah')
+                            ->label('Upload Sertifikat Tanah')
+                            ->disk('public')
+                            ->directory('sertifikat-tanah')
+                            ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png'])
+                            ->maxSize(5120)
+                            ->openable()
+                            ->downloadable(),
                         Toggle::make('is_active')
                             ->label('Status Aktif')
                             ->default(true),

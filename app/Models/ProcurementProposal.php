@@ -27,7 +27,9 @@ class ProcurementProposal extends Model
         'academic_period_id',
         'title',
         'description',
-        'total_budget',
+        'spesifikasi',
+        'dokumentasi',
+        'file_proposal',
         'priority',
         'status',
         'submitted_by',
@@ -44,7 +46,8 @@ class ProcurementProposal extends Model
     ];
 
     protected $casts = [
-        'total_budget' => 'decimal:2',
+        'spesifikasi' => 'decimal:2',
+        'dokumentasi' => 'array',
         'submitted_at' => 'datetime',
         'reviewed_at' => 'datetime',
         'approved_at' => 'datetime',

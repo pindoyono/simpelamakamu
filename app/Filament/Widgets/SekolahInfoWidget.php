@@ -13,8 +13,8 @@ class SekolahInfoWidget extends BaseWidget
 
     public static function canView(): bool
     {
-        $user = Auth::user();
-        return $user && $user->hasRole('sekolah') && $user->sekolahs()->exists();
+        // Info sekolah sekarang ditampilkan di SekolahMapWidget
+        return false;
     }
 
     protected function getStats(): array

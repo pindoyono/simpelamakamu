@@ -38,6 +38,7 @@ class Sekolah extends Model
         'jumlah_tu',
         'jumlah_siswa',
         'status_tanah',
+        'sertifikat_tanah',
         'kondisi_bangunan_umum',
         'current_academic_period_id',
     ];

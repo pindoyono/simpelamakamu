@@ -15,8 +15,10 @@ use Filament\Schemas\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\FileUpload;
 use Filament\Schemas\Components\Tabs;
 use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
@@ -116,11 +118,35 @@ class ProcurementProposalResource extends Resource
                                     ->required()
                                     ->rows(4),
 
-                                TextInput::make('total_budget')
-                                    ->label('Total Anggaran')
+                                TextInput::make('spesifikasi')
+                                    ->label('Spesifikasi')
                                     ->numeric()
-                                    ->prefix('Rp')
+                                    ->suffix('meter')
+                                    ->placeholder('200')
                                     ->required(),
+
+                                FileUpload::make('dokumentasi')
+                                    ->label('Dokumentasi Foto Bangunan')
+                                    ->image()
+                                    ->multiple()
+                                    ->disk('public')
+                                    ->directory('dokumentasi-rehabilitasi')
+                                    ->maxSize(5120)
+                                    ->maxFiles(10)
+                                    ->reorderable()
+                                    ->openable()
+                                    ->downloadable()
+                                    ->columnSpanFull(),
+
+                                FileUpload::make('file_proposal')
+                                    ->label('Upload File Proposal (PDF)')
+                                    ->disk('public')
+                                    ->directory('file-proposal')
+                                    ->acceptedFileTypes(['application/pdf'])
+                                    ->maxSize(2048)
+                                    ->openable()
+                                    ->downloadable()
+                                    ->columnSpanFull(),
                             ]),
                         Tabs\Tab::make('Status')
                             ->icon('heroicon-o-flag')
@@ -187,11 +213,18 @@ class ProcurementProposalResource extends Resource
                         default => $state,
                     }),
 
-                TextColumn::make('total_budget')
-                    ->label('Anggaran')
-                    ->money('IDR')
+                TextColumn::make('spesifikasi')
+                    ->label('Spesifikasi')
+                    ->suffix(' meter')
                     ->sortable(),
 
+                ImageColumn::make('dokumentasi')
+                    ->label('Dokumentasi')
+                    ->disk('public')
+                    ->circular()
+                    ->stacked()
+                    ->limit(3)
+                    ->limitedRemainingText(),
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
