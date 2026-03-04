@@ -248,10 +248,9 @@ class ProcurementProposalResource extends Resource
                     }),
 
                 TextColumn::make('created_at')
-                    ->label('Tanggal')
-                    ->date('d M Y')
-                    ->sortable()
-                    ->toggleable(),
+                    ->label('Tanggal Dibuat')
+                    ->dateTime('d M Y, H:i')
+                    ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('sekolah_id')

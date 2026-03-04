@@ -30,6 +30,7 @@ class SekolahSarpras extends Model
         'verified_at',
         'created_by',
         'needs_attention',
+        'gambar',
     ];
 
     protected $casts = [
@@ -43,6 +44,7 @@ class SekolahSarpras extends Model
         'is_verified' => 'boolean',
         'verified_at' => 'datetime',
         'needs_attention' => 'boolean',
+        'gambar' => 'array',
     ];
 
     /**

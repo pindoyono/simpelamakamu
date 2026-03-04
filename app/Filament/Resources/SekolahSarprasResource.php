@@ -17,11 +17,13 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\FileUpload;
 use Filament\Schemas\Components\Tabs;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
@@ -164,6 +166,19 @@ class SekolahSarprasResource extends Resource
                                     ->label('Catatan')
                                     ->rows(4)
                                     ->columnSpanFull(),
+
+                                FileUpload::make('gambar')
+                                    ->label('Foto Dokumentasi')
+                                    ->image()
+                                    ->multiple()
+                                    ->disk('public')
+                                    ->directory('sarpras-gambar')
+                                    ->maxSize(5120)
+                                    ->maxFiles(10)
+                                    ->reorderable()
+                                    ->openable()
+                                    ->downloadable()
+                                    ->columnSpanFull(),
                             ]),
                     ])
                     ->columnSpanFull(),
@@ -221,6 +236,14 @@ class SekolahSarprasResource extends Resource
                     ->badge()
                     ->color('danger')
                     ->alignCenter(),
+
+                ImageColumn::make('gambar')
+                    ->label('Foto')
+                    ->disk('public')
+                    ->circular()
+                    ->stacked()
+                    ->limit(3)
+                    ->limitedRemainingText(),
 
                 IconColumn::make('is_verified')
                     ->label('Verifikasi')
