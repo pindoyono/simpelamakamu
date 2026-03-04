@@ -215,7 +215,7 @@ class ProcurementProposalResource extends Resource
 
                 TextColumn::make('spesifikasi')
                     ->label('Spesifikasi')
-                    ->suffix(' meter')
+                    ->formatStateUsing(fn ($state) => $state !== null ? (int) $state . ' meter' : '-')
                     ->sortable(),
 
                 ImageColumn::make('dokumentasi')
