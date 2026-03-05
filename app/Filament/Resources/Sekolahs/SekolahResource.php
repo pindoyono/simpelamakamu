@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Sekolahs;
 
 use App\Filament\Resources\Sekolahs\Pages\CreateSekolah;
 use App\Filament\Resources\Sekolahs\Pages\EditSekolah;
+use App\Filament\Resources\Sekolahs\Pages\ImportSekolah;
 use App\Filament\Resources\Sekolahs\Pages\ListSekolahs;
 use App\Filament\Resources\Sekolahs\Schemas\SekolahForm;
 use App\Filament\Resources\Sekolahs\Tables\SekolahsTable;
@@ -75,6 +76,7 @@ class SekolahResource extends Resource
             'index' => ListSekolahs::route('/'),
             'create' => CreateSekolah::route('/create'),
             'edit' => EditSekolah::route('/{record}/edit'),
+            'import' => ImportSekolah::route('/import'),
         ];
     }
 

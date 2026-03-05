@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Sekolahs\Pages;
 
 use App\Filament\Resources\Sekolahs\SekolahResource;
+use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,6 +23,11 @@ class ListSekolahs extends ListRecords
         }
 
         return [
+            Action::make('import')
+                ->label('Import Excel')
+                ->icon('heroicon-o-arrow-up-tray')
+                ->color('success')
+                ->url(SekolahResource::getUrl('import')),
             CreateAction::make()
                 ->label('')
                 ->icon('heroicon-o-plus'),
