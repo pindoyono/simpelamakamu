@@ -19,6 +19,9 @@ class SekolahsTable
     {
         return $table
             ->columns([
+                TextColumn::make('row_number')
+                    ->label('No')
+                    ->rowIndex(),
                 ImageColumn::make('logo')
                     ->label('Logo')
                     ->circular()
