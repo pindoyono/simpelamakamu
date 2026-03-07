@@ -376,6 +376,19 @@ class ProcurementProposalResource extends Resource
             ->defaultSort('created_at', 'desc');
     }
 
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        $user = Auth::user();
+        if ($user && $user->hasRole('sekolah') && !$user->hasRole('super_admin') && !$user->hasRole('admin')) {
+            $sekolahIds = $user->sekolahs()->pluck('sekolahs.id');
+            $query->whereIn('sekolah_id', $sekolahIds);
+        }
+
+        return $query;
+    }
+
     public static function getRelations(): array
     {
         return [
