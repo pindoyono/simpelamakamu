@@ -173,11 +173,12 @@ class SekolahSarprasResource extends Resource
                                     ->multiple()
                                     ->disk('public')
                                     ->directory('sarpras-gambar')
-                                    ->maxSize(5120)
+                                    ->maxSize(1024)
                                     ->maxFiles(10)
                                     ->reorderable()
                                     ->openable()
                                     ->downloadable()
+                                    ->helperText('Format: JPG, PNG. Maksimal 1MB per file.')
                                     ->columnSpanFull(),
                             ]),
                     ])

@@ -27,6 +27,7 @@ use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ProcurementProposalResource extends Resource
 {
@@ -131,11 +132,12 @@ class ProcurementProposalResource extends Resource
                                     ->multiple()
                                     ->disk('public')
                                     ->directory('dokumentasi-rehabilitasi')
-                                    ->maxSize(5120)
+                                    ->maxSize(1024)
                                     ->maxFiles(10)
                                     ->reorderable()
                                     ->openable()
                                     ->downloadable()
+                                    ->helperText('Format: JPG, PNG. Maksimal 1MB per file.')
                                     ->columnSpanFull(),
 
                                 FileUpload::make('file_proposal')
@@ -146,6 +148,7 @@ class ProcurementProposalResource extends Resource
                                     ->maxSize(2048)
                                     ->openable()
                                     ->downloadable()
+                                    ->helperText('Format: PDF. Maksimal 2MB.')
                                     ->columnSpanFull(),
                             ]),
                         Tabs\Tab::make('Status')
@@ -225,6 +228,18 @@ class ProcurementProposalResource extends Resource
                     ->stacked()
                     ->limit(3)
                     ->limitedRemainingText(),
+
+                TextColumn::make('file_proposal')
+                    ->label('File Proposal')
+                    ->formatStateUsing(fn ($state) => $state ? 'Lihat PDF' : '-')
+                    ->icon(fn ($state) => $state ? 'heroicon-o-document-arrow-down' : null)
+                    ->color(fn ($state) => $state ? 'primary' : null)
+                    ->url(fn (ProcurementProposal $record): ?string => $record->file_proposal
+                        ? Storage::disk('public')->url($record->file_proposal)
+                        : null
+                    )
+                    ->openUrlInNewTab(),
+
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()

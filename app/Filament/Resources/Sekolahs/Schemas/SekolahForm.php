@@ -109,7 +109,8 @@ class SekolahForm
                             ->image()
                             ->disk('public')
                             ->directory('logos')
-                            ->maxSize(1024),
+                            ->maxSize(1024)
+                            ->helperText('Format: JPG, PNG. Maksimal 1MB.'),
                         Select::make('status_tanah')
                             ->label('Status Tanah')
                             ->options([
@@ -123,9 +124,10 @@ class SekolahForm
                             ->disk('public')
                             ->directory('sertifikat-tanah')
                             ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png'])
-                            ->maxSize(5120)
+                            ->maxSize(2048)
                             ->openable()
-                            ->downloadable(),
+                            ->downloadable()
+                            ->helperText('Format: PDF, JPG, PNG. Maksimal 2MB.'),
                         Toggle::make('is_active')
                             ->label('Status Aktif')
                             ->default(true),

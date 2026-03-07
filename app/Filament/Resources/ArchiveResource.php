@@ -118,7 +118,7 @@ class ArchiveResource extends Resource
                                     ->required()
                                     ->disk('public')
                                     ->directory('archives')
-                                    ->maxSize(10240)
+                                    ->maxSize(2048)
                                     ->acceptedFileTypes([
                                         'application/pdf',
                                         'application/msword',
@@ -128,7 +128,7 @@ class ArchiveResource extends Resource
                                         'image/jpeg',
                                         'image/png',
                                     ])
-                                    ->helperText('PDF, DOC, DOCX, XLS, XLSX, JPG, PNG (Max: 10MB)'),
+                                    ->helperText('PDF, DOC, DOCX, XLS, XLSX, JPG, PNG (Maks: 2MB)'),
 
                                 TextInput::make('tags')
                                     ->label('Tags')

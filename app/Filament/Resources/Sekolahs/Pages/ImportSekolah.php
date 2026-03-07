@@ -45,7 +45,7 @@ class ImportSekolah extends Page
                         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                         'application/vnd.ms-excel',
                     ])
-                    ->maxSize(10240) // 10MB
+                    ->maxSize(2048) // 2MB
                     ->required()
                     ->storeFiles(false)
                     ->helperText('Upload file Excel (.xlsx) dengan kolom minimal: NPSN, Nama. Kolom opsional: Jenjang, Status, Alamat, Kelurahan, Kecamatan, Kabupaten, Provinsi, Kode Pos, Telepon, Email, Website, Kepala Sekolah, NIP Kepala Sekolah, Tahun Berdiri, Akreditasi, Jumlah Guru, Jumlah TU, Jumlah Siswa, Latitude, Longitude'),
