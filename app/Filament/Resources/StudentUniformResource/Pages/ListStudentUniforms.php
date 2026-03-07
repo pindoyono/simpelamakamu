@@ -13,11 +13,16 @@ class ListStudentUniforms extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('import')
+                ->label('Import Excel')
+                ->icon('heroicon-o-arrow-up-tray')
+                ->color('success')
+                ->url(fn () => StudentUniformResource::getUrl('import')),
             Actions\Action::make('recap')
                 ->label('Rekap Ukuran')
                 ->icon('heroicon-o-table-cells')
                 ->color('info')
-                ->url(fn () => StudentUniformResource::getUrl('recap')),
+                ->url(fn () => \App\Filament\Pages\RekapSeragam::getUrl()),
             Actions\CreateAction::make()
                 ->label('')
                 ->icon('heroicon-o-plus'),

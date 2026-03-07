@@ -72,16 +72,13 @@ class StudentUniformResource extends Resource
                                 Select::make('academic_period_id')
                                     ->label('Tahun Ajaran')
                                     ->options(function () {
-                                        return AcademicPeriod::orderBy('year', 'desc')
-                                            ->get()
-                                            ->mapWithKeys(fn ($period) => [
-                                                $period->id => $period->year . ($period->is_active ? ' ✓ (Aktif)' : '')
-                                            ]);
+                                        $active = AcademicPeriod::where('is_active', true)->first();
+                                        return $active ? [$active->id => $active->year . ' ✓ (Aktif)'] : [];
                                     })
                                     ->required()
-                                    ->searchable()
-                                    ->preload()
                                     ->native(false)
+                                    ->disabled()
+                                    ->dehydrated()
                                     ->default(fn () => AcademicPeriod::where('is_active', true)->first()?->id),
 
                                 TextInput::make('nama_siswa')
@@ -92,7 +89,16 @@ class StudentUniformResource extends Resource
                                 TextInput::make('nisn')
                                     ->label('NISN')
                                     ->maxLength(20)
-                                    ->placeholder('Nomor Induk Siswa Nasional'),
+                                    ->placeholder('Nomor Induk Siswa Nasional')
+                                    ->unique(
+                                        table: 'student_uniforms',
+                                        column: 'nisn',
+                                        ignoreRecord: true,
+                                        modifyRuleUsing: fn ($rule, $get) => $rule->where('academic_period_id', $get('academic_period_id')),
+                                    )
+                                    ->validationMessages([
+                                        'unique' => 'NISN ini sudah terdaftar pada tahun ajaran ini.',
+                                    ]),
 
                                 Select::make('jenis_kelamin')
                                     ->label('Laki-laki / Perempuan')
@@ -252,7 +258,7 @@ class StudentUniformResource extends Resource
             'index' => Pages\ListStudentUniforms::route('/'),
             'create' => Pages\CreateStudentUniform::route('/create'),
             'edit' => Pages\EditStudentUniform::route('/{record}/edit'),
-            'recap' => Pages\RecapStudentUniform::route('/recap'),
+            'import' => Pages\ImportStudentUniform::route('/import'),
         ];
     }
 }
