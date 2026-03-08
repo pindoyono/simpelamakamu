@@ -204,7 +204,7 @@
                     <tbody>
                         @php
                             $no = 1;
-                            $kelasList = ['I', 'II', 'III', 'IV', 'V', 'VI'];
+                            $kelasList = $this->kelasList;
                         @endphp
                         @foreach ($kelasList as $kelas)
                             <tr>

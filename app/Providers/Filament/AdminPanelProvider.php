@@ -34,6 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandName('SIMPEL SAPA KAMU')
             ->favicon(asset('favicon.png'))
             ->spa()
+            ->sidebarCollapsibleOnDesktop()
             ->colors([
                 'primary' => Color::hex('#00A3E0'),
             ])

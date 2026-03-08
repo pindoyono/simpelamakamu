@@ -49,8 +49,9 @@ class StudentUniformImport
         'sepatu' => 'ukuran_sepatu',
     ];
 
-    protected array $validKelas = ['I', 'II', 'III', 'IV', 'V', 'VI'];
+    protected array $validKelas = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'];
     protected array $validSizes = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+    protected ?string $jenjang = null;
 
     public function __construct(int $sekolahId)
     {
@@ -61,6 +62,13 @@ class StudentUniformImport
             throw new \RuntimeException('Tidak ada tahun ajaran aktif. Silakan aktifkan tahun ajaran terlebih dahulu.');
         }
         $this->academicPeriodId = $activePeriod->id;
+
+        // Determine valid kelas based on school jenjang
+        $sekolah = \App\Models\Sekolah::find($sekolahId);
+        if ($sekolah) {
+            $this->jenjang = $sekolah->jenjang;
+            $this->validKelas = StudentUniform::getKelasListByJenjang($this->jenjang);
+        }
     }
 
     public function import(string $filePath): array
@@ -151,14 +159,15 @@ class StudentUniformImport
 
             // Normalize kelas
             $kelas = Str::upper(trim($mapped['kelas'] ?? ''));
-            // Support numeric: 1-6
-            $kelasMap = ['1' => 'I', '2' => 'II', '3' => 'III', '4' => 'IV', '5' => 'V', '6' => 'VI'];
+            // Support numeric: 1-9
+            $kelasMap = ['1' => 'I', '2' => 'II', '3' => 'III', '4' => 'IV', '5' => 'V', '6' => 'VI', '7' => 'VII', '8' => 'VIII', '9' => 'IX'];
             if (isset($kelasMap[$kelas])) {
                 $kelas = $kelasMap[$kelas];
             }
+            $validKelasStr = implode(', ', $this->validKelas);
             if (!in_array($kelas, $this->validKelas)) {
                 $this->results['failed']++;
-                $this->results['errors'][] = "Baris {$rowNumber}: Kelas '{$mapped['kelas']}' tidak valid (gunakan I-VI).";
+                $this->results['errors'][] = "Baris {$rowNumber}: Kelas '{$mapped['kelas']}' tidak valid (gunakan {$validKelasStr}).";
                 return;
             }
             $mapped['kelas'] = $kelas;

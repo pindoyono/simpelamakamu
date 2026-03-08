@@ -38,16 +38,39 @@ class StudentUniform extends Model
         return $this->belongsTo(AcademicPeriod::class);
     }
 
-    public static function getKelasOptions(): array
+    public static function getKelasOptions(?string $jenjang = null): array
     {
-        return [
-            'I' => 'I',
-            'II' => 'II',
-            'III' => 'III',
-            'IV' => 'IV',
-            'V' => 'V',
-            'VI' => 'VI',
-        ];
+        return match ($jenjang) {
+            'SMP' => [
+                'VII' => 'VII',
+                'VIII' => 'VIII',
+                'IX' => 'IX',
+            ],
+            'SD' => [
+                'I' => 'I',
+                'II' => 'II',
+                'III' => 'III',
+                'IV' => 'IV',
+                'V' => 'V',
+                'VI' => 'VI',
+            ],
+            default => [
+                'I' => 'I',
+                'II' => 'II',
+                'III' => 'III',
+                'IV' => 'IV',
+                'V' => 'V',
+                'VI' => 'VI',
+                'VII' => 'VII',
+                'VIII' => 'VIII',
+                'IX' => 'IX',
+            ],
+        };
+    }
+
+    public static function getKelasListByJenjang(?string $jenjang = null): array
+    {
+        return array_keys(self::getKelasOptions($jenjang));
     }
 
     public static function getSizeOptions(): array

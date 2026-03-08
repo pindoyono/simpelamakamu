@@ -53,7 +53,13 @@ class AcademicPeriodResource extends Resource
                             ->label('Tahun Ajaran')
                             ->placeholder('2024/2025')
                             ->required()
-                            ->unique(ignoreRecord: true)
+                            ->unique(
+                                ignoreRecord: true,
+                                modifyRuleUsing: fn ($rule, $get) => $rule->where('semester', $get('semester')),
+                            )
+                            ->validationMessages([
+                                'unique' => 'Tahun ajaran dengan semester ini sudah ada.',
+                            ])
                             ->maxLength(9)
                             ->helperText('Format: 2024/2025'),
 

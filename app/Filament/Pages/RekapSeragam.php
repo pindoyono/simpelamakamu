@@ -36,6 +36,19 @@ class RekapSeragam extends Page
     public ?int $selectedSekolahId = null;
     public ?int $selectedPeriodId = null;
 
+    public function getSelectedJenjangProperty(): ?string
+    {
+        if ($this->selectedSekolahId) {
+            return Sekolah::find($this->selectedSekolahId)?->jenjang;
+        }
+        return null;
+    }
+
+    public function getKelasListProperty(): array
+    {
+        return StudentUniform::getKelasListByJenjang($this->selectedJenjang);
+    }
+
     public static function getNavigationGroup(): ?string
     {
         return null;
@@ -124,7 +137,7 @@ class RekapSeragam extends Page
     public function getPakaianRecapProperty(): array
     {
         $sizes = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
-        $kelasList = ['I', 'II', 'III', 'IV', 'V', 'VI'];
+        $kelasList = $this->kelasList;
 
         // Baju: all students
         // Celana: male students (L)
@@ -177,7 +190,7 @@ class RekapSeragam extends Page
     public function getSepatuRecapProperty(): array
     {
         $sizes = range(28, 44);
-        $kelasList = ['I', 'II', 'III', 'IV', 'V', 'VI'];
+        $kelasList = $this->kelasList;
 
         $data = $this->getBaseQuery()
             ->select('kelas', 'ukuran_sepatu as size', DB::raw('COUNT(*) as total'))
@@ -228,8 +241,10 @@ class RekapSeragam extends Page
 
             $pakaianRecap = $this->buildPakaianRecap($sekolahId, $periodId);
             $sepatuRecap = $this->buildSepatuRecap($sekolahId, $periodId);
+            $jenjang = $sekolahId ? Sekolah::find($sekolahId)?->jenjang : null;
+            $kelasList = StudentUniform::getKelasListByJenjang($jenjang);
 
-            $this->writeSheetContent($writer, $sekolahName, $periodName, $pakaianRecap, $sepatuRecap);
+            $this->writeSheetContent($writer, $sekolahName, $periodName, $pakaianRecap, $sepatuRecap, $kelasList);
 
             $writer->close();
         }, 'rekap-seragam-' . str_replace(' ', '-', strtolower($sekolahName)) . '-' . now()->format('Y-m-d') . '.xlsx', [
@@ -269,8 +284,9 @@ class RekapSeragam extends Page
 
                 $pakaianRecap = $this->buildPakaianRecap($sekolah->id, $periodId);
                 $sepatuRecap = $this->buildSepatuRecap($sekolah->id, $periodId);
+                $kelasList = StudentUniform::getKelasListByJenjang($sekolah->jenjang);
 
-                $this->writeSheetContent($writer, $sekolah->nama, $periodName, $pakaianRecap, $sepatuRecap);
+                $this->writeSheetContent($writer, $sekolah->nama, $periodName, $pakaianRecap, $sepatuRecap, $kelasList);
             }
 
             if ($sekolahs->isEmpty()) {
@@ -286,7 +302,8 @@ class RekapSeragam extends Page
     protected function buildPakaianRecap(?int $sekolahId, ?int $periodId): array
     {
         $sizes = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
-        $kelasList = ['I', 'II', 'III', 'IV', 'V', 'VI'];
+        $jenjang = $sekolahId ? Sekolah::find($sekolahId)?->jenjang : null;
+        $kelasList = StudentUniform::getKelasListByJenjang($jenjang);
 
         $categories = [
             ['column' => 'ukuran_baju', 'label' => 'Baju', 'gender' => null],
@@ -343,7 +360,8 @@ class RekapSeragam extends Page
     protected function buildSepatuRecap(?int $sekolahId, ?int $periodId): array
     {
         $sizes = range(28, 44);
-        $kelasList = ['I', 'II', 'III', 'IV', 'V', 'VI'];
+        $jenjang = $sekolahId ? Sekolah::find($sekolahId)?->jenjang : null;
+        $kelasList = StudentUniform::getKelasListByJenjang($jenjang);
 
         $query = StudentUniform::query();
         if ($sekolahId) {
@@ -382,10 +400,9 @@ class RekapSeragam extends Page
         ];
     }
 
-    protected function writeSheetContent(Writer $writer, string $sekolahName, string $periodName, array $pakaianRecap, array $sepatuRecap): void
+    protected function writeSheetContent(Writer $writer, string $sekolahName, string $periodName, array $pakaianRecap, array $sepatuRecap, array $kelasList = ['I','II','III','IV','V','VI']): void
     {
         $sizes = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
-        $kelasList = ['I', 'II', 'III', 'IV', 'V', 'VI'];
 
         // Styles
         $titleStyle = (new Style())->setFontBold()->setFontSize(11);

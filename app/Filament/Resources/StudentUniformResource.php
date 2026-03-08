@@ -63,7 +63,8 @@ class StudentUniformResource extends Resource
                                     ->preload()
                                     ->native(false)
                                     ->hidden($isSekolahRole)
-                                    ->default($userSekolahId),
+                                    ->default($userSekolahId)
+                                    ->reactive(),
 
                                 \Filament\Forms\Components\Hidden::make('sekolah_id')
                                     ->default($userSekolahId)
@@ -112,8 +113,28 @@ class StudentUniformResource extends Resource
                                 Select::make('kelas')
                                     ->label('Kelas')
                                     ->required()
-                                    ->options(StudentUniform::getKelasOptions())
-                                    ->native(false),
+                                    ->options(function ($get) {
+                                        $sekolahId = $get('sekolah_id');
+                                        if ($sekolahId) {
+                                            $jenjang = \App\Models\Sekolah::find($sekolahId)?->jenjang;
+                                            return StudentUniform::getKelasOptions($jenjang);
+                                        }
+                                        return StudentUniform::getKelasOptions();
+                                    })
+                                    ->native(false)
+                                    ->reactive(),
+
+                                \Filament\Forms\Components\Placeholder::make('jenjang_info')
+                                    ->label('')
+                                    ->content(function ($get) {
+                                        $sekolahId = $get('sekolah_id');
+                                        if ($sekolahId) {
+                                            $jenjang = \App\Models\Sekolah::find($sekolahId)?->jenjang;
+                                            return $jenjang ? "Jenjang: {$jenjang}" : '';
+                                        }
+                                        return '';
+                                    })
+                                    ->hidden(fn ($get) => !$get('sekolah_id')),
                             ]),
                     ]),
 
